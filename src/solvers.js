@@ -87,17 +87,74 @@ return numberOfBoards;
 
 // return a matrix (an array of arrays) representing a single nxn chessboard, with n queens placed such that none of them can attack each other
 window.findNQueensSolution = function(n) {
-  var solution = undefined; //fixme
+ var board = new Board({"n":n});
+ for(var y = 0; y < n; y++){
+   for(var x = 0; x < n; x++){
+     if(board._currentAttributes[x][y] === 1){
+       board._currentAttributes[x][y] = 0;
+       continue;
+     }
+     if(board._currentAttributes[x][y] === 0){
+       board._currentAttributes[x][y] = 1;
+       if (board.hasAnyColConflicts() || board.hasAnyRowConflicts() || board.hasAnyMajorDiagonalConflicts() || board.hasAnyMinorDiagonalConflicts()) {
+         board._currentAttributes[x][y] = 0;
+       }
+     }
+   }
+ }
 
-  console.log('Single solution for ' + n + ' queens:', JSON.stringify(solution));
-  return solution;
+ var results = [];
+ for (var i = 0; i < n; i++) {
+   results.push(board._currentAttributes[i]);
+ }
+
+ return results;
 };
 
 
 // return the number of nxn chessboards that exist, with n queens placed such that none of them can attack each other
 window.countNQueensSolutions = function(n) {
-  var solutionCount = undefined; //fixme
+  var numberOfBoards = 0;
+  var validBoardsFound = [];
+  var totalRuns = 0;
+  for(var i = 0; i < n; i++){
+    validBoardsFound.push(null);
+  }
+  var board = new Board({"n":n});
+  for(var y = 0; y <= n; y++){
+    if ((x === n && validBoardsFound[0] === null) || (isNaN(x) && totalRuns > 0)) {
+      break;
+    }
+    for(var x = 0; x <= n; x++){
+      totalRuns++;
+      if (x === n && validBoardsFound[y]) {
+        x = validBoardsFound[y];
+      }
+      if (x === n && !validBoardsFound[y]) {
+        y--;
+        x = validBoardsFound[y] - 1;
+        continue;
+      }
 
-  console.log('Number of solutions for ' + n + ' queens:', solutionCount);
-  return solutionCount;
+      if(board._currentAttributes[x][y] === 1){
+        board._currentAttributes[x][y] = 0;
+        validBoardsFound[y] = null;
+        continue;
+      }
+      if(board._currentAttributes[x][y] === 0){
+        board._currentAttributes[x][y] = 1;
+        if (board.hasAnyColConflicts() || board.hasAnyRowConflicts() || board.hasAnyMajorDiagonalConflicts() || board.hasAnyMinorDiagonalConflicts()) {
+          board._currentAttributes[x][y] = 0;
+          continue;
+        }
+        validBoardsFound[y] = x;
+        if(validBoardsFound.indexOf(null) === -1){
+          ++numberOfBoards;
+        }
+
+        break;
+      }
+    }
+  }
+return numberOfBoards;
 };
