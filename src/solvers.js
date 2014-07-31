@@ -17,8 +17,6 @@ window.findNRooksSolution = function(n) {
   var board = new Board({"n":n});
   for(var y = 0; y < n; y++){
     for(var x = 0; x < n; x++){
-      debugger;
-      //if x is 1 make 0 -> continue to next x
       if(board._currentAttributes[x][y] === 1){
         board._currentAttributes[x][y] = 0;
         continue;
@@ -28,35 +26,61 @@ window.findNRooksSolution = function(n) {
         if (board.hasAnyColConflicts() || board.hasAnyRowConflicts()) {
           board._currentAttributes[x][y] = 0;
         }
-        //board._currentAttributes[x][y]
       }
-      //if x === 0 make 1
-      //check horz && vert for 1
-        //if good leave -> continue to next y
-        //if bad x = 0 got to next x
-        //if x > boardSize{ x = 0   y--}
-      //endcase y === n && x === n
- //     board._currentAttributes.push([]);
     }
   }
 
-  return board;
+  var results = [];
+  for (var i = 0; i < n; i++) {
+    results.push(board._currentAttributes[i]);
+  }
 
-
-//  var solution = undefined; //fixme
-
-//  console.log('Single solution for ' + n + ' rooks:', JSON.stringify(solution));
-//  return solution;
+  return results;
 };
-
-
 
 // return the number of nxn chessboards that exist, with n rooks placed such that none of them can attack each other
 window.countNRooksSolutions = function(n) {
-  var solutionCount = undefined; //fixme
+  var numberOfBoards = 0;
+  var validBoardsFound = [];
+  for(var i = 0; i < n; i++){
+    validBoardsFound.push(null);
+  }
+  var board = new Board({"n":n});
+  for(var y = 0; y <= n; y++){
+    if ((x === n && validBoardsFound[0] === null) || (isNaN(x) && numberOfBoards > 0)) {
+      break;
+    }
+    for(var x = 0; x <= n; x++){
+      if (x === n && validBoardsFound[y]) {
+        x = validBoardsFound[y];
+      }
+      if (x === n && !validBoardsFound[y]) {
+        y--;
+        x = validBoardsFound[y] - 1;
+        continue;
+      }
 
-  console.log('Number of solutions for ' + n + ' rooks:', solutionCount);
-  return solutionCount;
+      if(board._currentAttributes[x][y] === 1){
+        board._currentAttributes[x][y] = 0;
+        validBoardsFound[y] = null;
+        continue;
+      }
+      if(board._currentAttributes[x][y] === 0){
+        board._currentAttributes[x][y] = 1;
+        if (board.hasAnyColConflicts() || board.hasAnyRowConflicts()) {
+          board._currentAttributes[x][y] = 0;
+          continue;
+        }
+        validBoardsFound[y] = x;
+        if(validBoardsFound.indexOf(null) === -1){
+          ++numberOfBoards;
+        }
+
+        break;
+      }
+    }
+  }
+return numberOfBoards;
 };
 
 
